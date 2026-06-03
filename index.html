@@ -40,6 +40,11 @@ h2{font-size:39px;color:var(--ink);font-weight:800;margin-bottom:4px;letter-spac
   box-shadow:0 1px 3px rgba(13,27,42,.04);display:flex;flex-direction:column;min-height:0}
 .card h3{font-size:17px;color:var(--slate);font-weight:700;margin-bottom:14px;letter-spacing:.3px}
 .chart-wrap{position:relative;flex:1;min-height:0}
+.seg-list{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+.seg-cat{font-size:15.5px;line-height:1.42;color:var(--slate)}
+.seg-cat .c{display:inline-block;font-weight:800;color:var(--green-d);background:#eafaf0;
+  border-radius:6px;padding:1px 9px;margin-right:7px;font-size:14px}
+.seg-cat b{color:var(--ink2);font-weight:700}
 .kpi{display:flex;flex-direction:column;gap:2px;justify-content:center}
 .kpi .v{font-size:44px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-1px}
 .kpi .l{font-size:15px;color:var(--slate);font-weight:600}
@@ -128,25 +133,39 @@ ul.bul.b li::before{background:var(--blue)}
 <section class="slide">
   <div class="rate">1 JPY = 0.21 TWD</div>
   <div class="kicker">01 ・ 公司概覽</div>
-  <h2>一家公司，三大引擎</h2>
-  <p class="sub">LY Corporation 由 Yahoo! JAPAN 與 LINE 整合而成，營收按「事業別」而非「品牌別」揭露</p>
+  <h2>三大事業分部（依財報官方分類）</h2>
+  <p class="sub">LY Corporation 財報將營收劃為三大分部，每個分部再分子類別——以下對照財報「Major services / products of each segment」</p>
   <div class="grid g3">
     <div class="card">
-      <h3>MEDIA 媒體｜成熟金牛</h3>
-      <div class="kpi"><div class="v">NT$1,544億</div><div class="l">FY25 營收</div><div class="d flat">+0.4% YoY</div></div>
-      <ul class="bul" style="margin-top:16px"><li>Yahoo 搜尋／展示廣告</li><li><b>LINE 官方帳號廣告（+15.3%）</b></li><li>貼圖、遊戲、漫畫</li></ul>
+      <h3>MEDIA 媒體｜廣告為主</h3>
+      <div class="kpi"><div class="v" style="font-size:30px">NT$1,544億</div><div class="l">FY25 營收</div><div class="d flat">+0.4% YoY ｜ EBITDA −2.2%</div></div>
+      <div class="seg-list">
+        <div class="seg-cat"><span class="c">搜尋廣告</span>Yahoo! JAPAN 搜尋廣告</div>
+        <div class="seg-cat"><span class="c">帳號廣告</span><b>LINE 官方帳號</b>、貼圖促銷、LINE Flyer（+15.3%）</div>
+        <div class="seg-cat"><span class="c">展示廣告</span>Yahoo 展示廣告、LINE VOOM／NEWS、Talk Head View</div>
+        <div class="seg-cat"><span class="c">其他</span>LINE 貼圖／遊戲／音樂／漫畫、LYP Premium、Yahoo 信箱</div>
+      </div>
     </div>
     <div class="card">
       <h3>COMMERCE 電商｜規模大、利潤薄</h3>
-      <div class="kpi"><div class="v">NT$1,801億</div><div class="l">FY25 營收</div><div class="d flat">+1.1% YoY</div></div>
-      <ul class="bul" style="margin-top:16px"><li>ZOZO、ASKUL、Yahoo 購物</li><li>GMV NT$9,813億 (+7.1%)</li><li>LINE GIFT / LINE SHOPPING</li></ul>
+      <div class="kpi"><div class="v" style="font-size:30px">NT$1,801億</div><div class="l">FY25 營收（GMV NT$9,813億 +7.1%）</div><div class="d flat">+1.1% YoY ｜ EBITDA −12.8%</div></div>
+      <div class="seg-list">
+        <div class="seg-cat"><span class="c">購物</span>Yahoo 購物、<b>LINE GIFT／LINE SHOPPING</b>、海外電商（台/泰）</div>
+        <div class="seg-cat"><span class="c">二手</span>Yahoo 拍賣、Yahoo 跳蚤市場、BEENOS</div>
+        <div class="seg-cat"><span class="c">服務電商</span>Yahoo 旅遊、Ikyu.com、LINE TRAVEL、<b>LINE MAN</b></div>
+        <div class="seg-cat"><span class="c">ZOZO·ASKUL</span>ZOZOTOWN、Lyst、ASKUL B2B、LOHACO</div>
+      </div>
     </div>
     <div class="card">
-      <h3>STRATEGIC 策略｜成長引擎</h3>
-      <div class="kpi"><div class="v">NT$936億</div><div class="l">FY25 營收</div><div class="d up">+30.6% YoY</div></div>
-      <ul class="bul" style="margin-top:16px"><li>PayPay（GMV NT$4.05兆 +22.9%）</li><li><b>LINE Bank Taiwan 併入</b></li><li>LINE MAN 泰國外送</li></ul>
+      <h3>STRATEGIC 策略｜金融科技</h3>
+      <div class="kpi"><div class="v" style="font-size:30px">NT$936億</div><div class="l">FY25 營收</div><div class="d up">+30.6% YoY ｜ EBITDA +85.0%</div></div>
+      <div class="seg-list">
+        <div class="seg-cat"><span class="c">PayPay 合併</span>PayPay 支付、PayPay 卡、PayPay 銀行、PayPay 證券（GMV NT$4.05兆）</div>
+        <div class="seg-cat"><span class="c">其他金融</span><b>LINE Bank Taiwan</b>、LINE Pay、LINE Score、LINE FX、PayPay 保險／資產管理</div>
+      </div>
     </div>
   </div>
+  <p class="note">分類來源：LY Corporation FY2025 決算短信 第 5 頁「Major services / products of each segment」。括號內為財報揭露之成長率／GMV。</p>
 </section>
 
 <!-- 3 INCOME -->
