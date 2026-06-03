@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LY Corporation 財務分析簡報（台幣版）</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --green:#06C755; --green-d:#05a648; --ink:#0d1b2a; --ink2:#1b2a3a;
+  --slate:#5a6b7b; --line:#e3e8ee; --bg:#f4f6f9; --card:#fff;
+  --red:#e23b3b; --amber:#f2a000; --blue:#2d6cdf; --gold:#c79a3a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;
+  background:#0a0e14;color:var(--ink);overflow:hidden;
+}
+#deck{position:relative;width:100vw;height:100vh;}
+.slide{
+  position:absolute;inset:0;display:none;flex-direction:column;
+  padding:50px 72px 76px;background:var(--bg);
+  animation:fade .45s ease;overflow:hidden;
+}
+.slide.active{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.kicker{font-size:14px;letter-spacing:3px;color:var(--green-d);font-weight:700;text-transform:uppercase;margin-bottom:6px}
+h1{font-size:46px;line-height:1.12;color:var(--ink);font-weight:800;letter-spacing:-.5px}
+h2{font-size:33px;color:var(--ink);font-weight:800;margin-bottom:4px;letter-spacing:-.4px}
+.sub{font-size:16px;color:var(--slate);margin-bottom:18px;font-weight:500}
+.rate{position:absolute;top:50px;right:72px;font-size:12px;font-weight:700;color:#fff;background:var(--green-d);
+  padding:5px 12px;border-radius:20px;letter-spacing:.3px}
+.grid{display:grid;gap:20px;flex:1;min-height:0}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g23{grid-template-columns:1.15fr .85fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;
+  box-shadow:0 1px 3px rgba(13,27,42,.04);display:flex;flex-direction:column;min-height:0}
+.card h3{font-size:15px;color:var(--slate);font-weight:700;margin-bottom:14px;letter-spacing:.3px}
+.chart-wrap{position:relative;flex:1;min-height:0}
+.kpi{display:flex;flex-direction:column;gap:2px;justify-content:center}
+.kpi .v{font-size:38px;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-1px}
+.kpi .l{font-size:13px;color:var(--slate);font-weight:600}
+.kpi .d{font-size:13px;font-weight:700;margin-top:4px}
+.up{color:var(--green-d)} .down{color:var(--red)} .flat{color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;font-weight:600;color:var(--ink2)}
+thead th{color:var(--slate);font-size:12px;font-weight:700;letter-spacing:.4px;border-bottom:2px solid var(--ink)}
+tbody tr:last-child td{border-bottom:none}
+.hl{background:#f0fbf4}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-left:6px}
+ul.bul{list-style:none;display:flex;flex-direction:column;gap:13px;margin-top:4px}
+ul.bul li{font-size:15.5px;line-height:1.5;color:var(--ink2);padding-left:26px;position:relative}
+ul.bul li::before{content:"";position:absolute;left:0;top:8px;width:11px;height:11px;border-radius:3px;background:var(--green)}
+ul.bul li b{color:var(--ink)}
+ul.bul.r li::before{background:var(--red)}
+ul.bul.b li::before{background:var(--blue)}
+.note{font-size:12px;color:#94a3b3;margin-top:10px}
+.pill{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
+  border-radius:30px;padding:6px 15px;font-size:13px;font-weight:600;color:var(--ink2)}
+.dot{width:9px;height:9px;border-radius:50%}
+#nav{position:fixed;bottom:0;left:0;right:0;height:54px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 30px;background:rgba(13,27,42,.92);z-index:50;backdrop-filter:blur(6px)}
+#nav .brand{color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px}
+#nav .brand span{color:var(--green)}
+.navbtns{display:flex;align-items:center;gap:14px}
+.nbtn{background:rgba(255,255,255,.12);color:#fff;border:none;width:34px;height:34px;border-radius:9px;
+  font-size:17px;cursor:pointer;transition:.15s}
+.nbtn:hover{background:var(--green)}
+#counter{color:#cdd6e0;font-size:13px;font-weight:600;min-width:54px;text-align:center}
+.dots{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:50}
+.pdot{width:8px;height:8px;border-radius:50%;background:#c2ccd6;cursor:pointer;transition:.2s}
+.pdot.on{background:var(--green);width:22px;border-radius:4px}
+.cover{background:linear-gradient(135deg,#06C755 0%,#05924a 45%,#0d1b2a 100%);color:#fff;justify-content:center}
+.cover .kicker{color:#bff5d4}
+.cover h1{color:#fff;font-size:60px}
+.cover .meta{display:flex;gap:30px;margin-top:34px;flex-wrap:wrap}
+.cover .meta div{border-left:3px solid rgba(255,255,255,.5);padding-left:14px}
+.cover .meta .mv{font-size:25px;font-weight:800}
+.cover .meta .ml{font-size:13px;opacity:.85}
+.logo{font-size:13px;letter-spacing:4px;opacity:.8;margin-bottom:18px}
+.dark{background:linear-gradient(135deg,#0d1b2a,#13283e);color:#fff}
+.dark h2,.dark .kpi .v{color:#fff}
+.dark .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.dark .card h3{color:#9fb3c8}
+.dark .sub{color:#9fb3c8}
+.bignum{font-size:70px;font-weight:800;letter-spacing:-2px;line-height:1}
+.bignum small{font-size:23px;font-weight:600;color:var(--green)}
+.flowrow{display:flex;align-items:stretch;gap:12px}
+.flowbox{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px}
+.flowbox .n{font-size:12px;color:var(--green);font-weight:700;letter-spacing:1px}
+.flowbox .t{font-size:17px;font-weight:800;margin:6px 0}
+.flowbox .x{font-size:12.5px;color:#9fb3c8;line-height:1.5}
+.arrow{display:flex;align-items:center;color:var(--green);font-size:22px}
+.src-use{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.su-col{background:rgba(255,255,255,.05);border-radius:14px;padding:18px 20px}
+.su-col h4{font-size:14px;color:#9fb3c8;margin-bottom:12px;letter-spacing:1px}
+.su-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:14.5px}
+.su-row:last-child{border:none;font-weight:800;color:var(--green)}
+@media (max-width:1100px){.slide{padding:34px 36px 70px}h1{font-size:38px}.cover h1{font-size:44px}.rate{right:36px;top:34px}}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- 1 COVER -->
+<section class="slide active cover">
+  <div class="logo">LY CORPORATION ・ TSE PRIME ・ 4689</div>
+  <div class="kicker">創業財務 ・ 財報分析（新台幣版）</div>
+  <h1>LY Corporation<br>財務分析與融資策略</h1>
+  <p class="sub" style="color:#d8f5e3;margin-top:18px;font-size:18px">Yahoo! JAPAN × LINE 整合體 ｜ FY2023–FY2025（截至 2026/3/31）｜ IFRS</p>
+  <div class="meta">
+    <div><div class="mv">NT$4,276億</div><div class="ml">FY2025 營收 (+6.2%)</div></div>
+    <div><div class="mv">16.8%</div><div class="ml">營業利益率</div></div>
+    <div><div class="mv">NT$1,043億</div><div class="ml">調整後 EBITDA</div></div>
+    <div><div class="mv">NT$2.35兆</div><div class="ml">資產總額 (+22%)</div></div>
+  </div>
+  <div style="margin-top:30px;font-size:13px;color:#cfeede">換算匯率：1 日圓 = 0.21 新台幣（1 新台幣 ≈ 4.76 日圓）｜ 原始財報以日圓 IFRS 編製</div>
+</section>
+
+<!-- 2 OVERVIEW -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">01 ・ 公司概覽</div>
+  <h2>一家公司，三大引擎</h2>
+  <p class="sub">LY Corporation 由 Yahoo! JAPAN 與 LINE 整合而成，營收按「事業別」而非「品牌別」揭露</p>
+  <div class="grid g3">
+    <div class="card">
+      <h3>MEDIA 媒體｜成熟金牛</h3>
+      <div class="kpi"><div class="v">NT$1,544億</div><div class="l">FY25 營收</div><div class="d flat">+0.4% YoY</div></div>
+      <ul class="bul" style="margin-top:16px"><li>Yahoo 搜尋／展示廣告</li><li><b>LINE 官方帳號廣告（+15.3%）</b></li><li>貼圖、遊戲、漫畫</li></ul>
+    </div>
+    <div class="card">
+      <h3>COMMERCE 電商｜規模大、利潤薄</h3>
+      <div class="kpi"><div class="v">NT$1,801億</div><div class="l">FY25 營收</div><div class="d flat">+1.1% YoY</div></div>
+      <ul class="bul" style="margin-top:16px"><li>ZOZO、ASKUL、Yahoo 購物</li><li>GMV NT$9,813億 (+7.1%)</li><li>LINE GIFT / LINE SHOPPING</li></ul>
+    </div>
+    <div class="card">
+      <h3>STRATEGIC 策略｜成長引擎</h3>
+      <div class="kpi"><div class="v">NT$936億</div><div class="l">FY25 營收</div><div class="d up">+30.6% YoY</div></div>
+      <ul class="bul" style="margin-top:16px"><li>PayPay（GMV NT$4.05兆 +22.9%）</li><li><b>LINE Bank Taiwan 併入</b></li><li>LINE MAN 泰國外送</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3 INCOME -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">02 ・ 損益表</div>
+  <h2>營收穩健，獲利率大幅躍升</h2>
+  <p class="sub">三年營收 CAGR 約 6%，但營業利益率從 11.5% 拉升到 16.8%——綜效兌現的故事</p>
+  <div class="grid g23">
+    <div class="card"><h3>營收 vs 營業利益率（億新台幣 / %）</h3><div class="chart-wrap"><canvas id="c_income"></canvas></div></div>
+    <div class="card">
+      <h3>關鍵損益指標（億新台幣）</h3>
+      <table>
+        <thead><tr><th>項目</th><th>FY23</th><th>FY24</th><th>FY25</th></tr></thead>
+        <tbody>
+          <tr><td>營收</td><td>3,811</td><td>4,027</td><td>4,276</td></tr>
+          <tr><td>營業利益</td><td>437</td><td>662</td><td>717</td></tr>
+          <tr class="hl"><td>營業利益率</td><td>11.5%</td><td>16.4%</td><td>16.8%</td></tr>
+          <tr><td>母公司淨利</td><td>238</td><td>322</td><td>407</td></tr>
+          <tr class="hl"><td>淨利率</td><td>6.2%</td><td>8.0%</td><td>9.5%</td></tr>
+          <tr><td>調整後 EBITDA</td><td>871</td><td>989</td><td>1,043</td></tr>
+        </tbody>
+      </table>
+      <p class="note">FY24（截至 25/3）營業利益 +51% 是整合綜效兌現的關鍵轉折點。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 PROFITABILITY -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">03 ・ 獲利能力與股東報酬</div>
+  <h2>EPS 與 ROE 三年連升</h2>
+  <p class="sub">EPS 成長快於淨利——庫藏股買回（股數 71.5億→68.8億股）同步推升每股指標</p>
+  <div class="grid g23">
+    <div class="card"><h3>基本 EPS vs 調整後 EPS（新台幣 / 每股）</h3><div class="chart-wrap"><canvas id="c_eps"></canvas></div></div>
+    <div class="card"><h3>ROE（母公司權益報酬率，%）</h3><div class="chart-wrap"><canvas id="c_roe"></canvas></div></div>
+  </div>
+  <div class="grid g4" style="flex:0 0 auto;margin-top:18px">
+    <div class="card kpi"><div class="v">NT$5.87</div><div class="l">基本 EPS</div><div class="d up">+33% YoY</div></div>
+    <div class="card kpi"><div class="v">6.5%</div><div class="l">ROE</div><div class="d up">+1.4pt</div></div>
+    <div class="card kpi"><div class="v">3.8%</div><div class="l">股數淨減</div><div class="d up">庫藏股回購</div></div>
+    <div class="card kpi"><div class="v">NT$1.53</div><div class="l">每股股利</div><div class="d up">FY26E NT$2.31 (+50%)</div></div>
+  </div>
+</section>
+
+<!-- 5 BALANCE -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">04 ・ 資產負債表</div>
+  <h2>資產暴增 22%，財務結構轉趨積極</h2>
+  <p class="sub">FY25 資產 +NT$4,300億（5 家併購入帳），代價是自有資本比率跌破 27%</p>
+  <div class="grid g23">
+    <div class="card"><h3>資產總額 vs 自有資本比率（億新台幣 / %）</h3><div class="chart-wrap"><canvas id="c_bs"></canvas></div></div>
+    <div class="card">
+      <h3>解讀</h3>
+      <ul class="bul">
+        <li><b>資產 +22%</b>：年內新增合併 BEENOS、LINE Bank Taiwan、LINE MAN（新加坡/泰國）等 5 家</li>
+        <li><b>自有資本比率 32.7%→26.8%</b>：槓桿明顯升高，反映金融業務（網銀存放款）的高負債特性</li>
+        <li><b>母公司權益幾乎沒增加</b>：獲利被庫藏股＋股利抵銷，權益增量來自少數股東（併購）</li>
+        <li><b>需留意</b>：5 件併購帶入大量商譽與無形資產 → <b>未來減損風險</b></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 6 CASHFLOW -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">05 ・ 現金流量</div>
+  <h2>營運現金強勁，但自由現金流轉負</h2>
+  <p class="sub">OCF/營收達 32.5%，現金品質佳；惟 FY25 投資 -NT$1,699億（併購+AI 投資）使 FCF 轉負</p>
+  <div class="grid g23">
+    <div class="card"><h3>三大現金流（億新台幣）</h3><div class="chart-wrap"><canvas id="c_cf"></canvas></div></div>
+    <div class="card">
+      <h3>現金流結構（億新台幣）</h3>
+      <table>
+        <thead><tr><th>項目</th><th>FY23</th><th>FY24</th><th>FY25</th></tr></thead>
+        <tbody>
+          <tr><td>營運 CF</td><td>665</td><td>1,091</td><td>1,392</td></tr>
+          <tr><td>投資 CF</td><td>(933)</td><td>(1,062)</td><td>(1,699)</td></tr>
+          <tr><td>融資 CF</td><td>(171)</td><td>(875)</td><td>322</td></tr>
+          <tr class="hl"><td>自由現金流</td><td>(268)</td><td>29</td><td>(307)</td></tr>
+          <tr><td>期末現金</td><td>2,983</td><td>2,192</td><td>2,243</td></tr>
+        </tbody>
+      </table>
+      <p class="note">FY25 融資 CF 由負轉正（+NT$322億）→ 本輪擴張是「舉債＋發債」支應，與槓桿升高一致。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 SEGMENT -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">06 ・ 分部分析（核心洞察）</div>
+  <h2>成長動能高度集中在「策略事業」</h2>
+  <p class="sub">兩大金牛 EBITDA 都在萎縮，整體 +5.5% 全靠策略事業（+85%）撐起</p>
+  <div class="grid g2">
+    <div class="card"><h3>分部營收 FY24 → FY25（億新台幣）</h3><div class="chart-wrap"><canvas id="c_segrev"></canvas></div></div>
+    <div class="card"><h3>分部調整後 EBITDA YoY（%）</h3><div class="chart-wrap"><canvas id="c_segebitda"></canvas></div></div>
+  </div>
+  <div class="grid g3" style="flex:0 0 auto;margin-top:16px">
+    <div class="card kpi"><div class="l">MEDIA</div><div class="v" style="font-size:30px">EBITDA −2.2%</div><div class="d flat">生成式 AI／促銷費上升</div></div>
+    <div class="card kpi"><div class="l">COMMERCE</div><div class="v" style="font-size:30px">EBITDA −12.8%</div><div class="d down">ASKUL 勒索軟體事件衝擊</div></div>
+    <div class="card kpi"><div class="l">STRATEGIC</div><div class="v" style="font-size:30px">EBITDA +85.0%</div><div class="d up">金融科技＋海外</div></div>
+  </div>
+</section>
+
+<!-- 8 LINE -->
+<section class="slide">
+  <div class="rate">1 JPY = 0.21 TWD</div>
+  <div class="kicker">07 ・ LINE 業務拆解</div>
+  <h2>LINE 的故事：廣告化 × 海外金融化 × 收掉日本支付</h2>
+  <p class="sub">LINE 收入橫跨三分部、與 Yahoo／PayPay 綁定，唯一直接揭露的硬數字是「帳號廣告 +15.3%」</p>
+  <div class="grid g3">
+    <div class="card">
+      <h3 style="color:var(--green-d)">✅ 賺錢：LINE 廣告</h3>
+      <ul class="bul"><li><b>帳號廣告 +15.3%</b>（LINE 官方帳號付費帳號數增加）</li><li>展示廣告（LINE VOOM/NEWS）成長</li><li>金額藏在 Media 分部，無單獨揭露</li></ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--blue)">📈 成長：海外金融</h3>
+      <ul class="bul b"><li>LINE Bank Taiwan 2025/6 併入（51.15%）</li><li>LINE MAN 泰國外送併入</li><li>但被 PayPay（GMV NT$4.05兆）光芒蓋過</li></ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--red)">📉 止血：日本本土</h3>
+      <ul class="bul r"><li>LINE Pay 日本 2025/4 已終止</li><li>LINE SHOPPING 日本 2026/6 將終止</li><li>反而推升 Strategic EBITDA（虧損消失）</li></ul>
+    </div>
+  </div>
+  <p class="note">限制：財報為「決算短信」摘要版，未揭露 LINE MAU 與「LINE 總營收」；更細數據需查 LY IR 補充資料與有価証券報告書。</p>
+</section>
+
+<!-- 8.5 VALUATION COMPS -->
+<section class="slide">
+  <div class="kicker">08 ・ 同業估值比較</div>
+  <h2>同業中估值最低 ── 有「重評價」想像空間</h2>
+  <p class="sub">LY 的 EV/EBITDA 與 P/S 都是亞洲平台同業裡最低的一檔，反映低成長＋治理折價＋日本折價</p>
+  <div class="grid g23">
+    <div class="card"><h3>EV / EBITDA 倍數比較（倍）</h3><div class="chart-wrap"><canvas id="c_val"></canvas></div></div>
+    <div class="card">
+      <h3>亞洲平台同業估值（約略值）</h3>
+      <table>
+        <thead><tr><th>公司</th><th>市值</th><th>P/E</th><th>EV/EBITDA</th><th>P/S</th><th>營收YoY</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>LY Corp（日 4689）</td><td>~US$24B</td><td>18x</td><td>7.5x</td><td>1.7x</td><td>+6%</td></tr>
+          <tr><td>Naver（韓）</td><td>~US$25B</td><td>20x</td><td>12x</td><td>3.0x</td><td>+11%</td></tr>
+          <tr><td>Kakao（韓）</td><td>~US$15B</td><td>35x</td><td>11x</td><td>2.2x</td><td>+5%</td></tr>
+          <tr><td>Tencent（中）</td><td>~US$450B</td><td>19x</td><td>13x</td><td>5.5x</td><td>+8%</td></tr>
+          <tr><td>Sea（新）</td><td>~US$80B</td><td>40x</td><td>22x</td><td>3.5x</td><td>+25%</td></tr>
+          <tr><td>Rakuten（日）</td><td>~US$13B</td><td>虧損</td><td>9x</td><td>0.8x</td><td>+8%</td></tr>
+        </tbody>
+      </table>
+      <p class="note">同業選擇邏輯：Naver 為 LINE 共同母公司、Kakao 為韓國 LINE 對標、Tencent 為「超級 App＋金融」終局範本、Sea 為東南亞數位金融對手、Rakuten 為日本本土對標。</p>
+    </div>
+  </div>
+  <div class="grid g3" style="flex:0 0 auto;margin-top:14px">
+    <div class="card kpi"><div class="l">為何便宜</div><div class="v" style="font-size:21px">治理折價</div><div class="d flat">SoftBank/Naver 雙控、2023 個資外洩、主管機關壓力</div></div>
+    <div class="card kpi"><div class="l">重評價觸發點</div><div class="v" style="font-size:21px">策略事業放大</div><div class="d up">向 Tencent／Sea 的「超級 App＋金融」靠攏</div></div>
+    <div class="card kpi"><div class="l">對融資的意涵</div><div class="v" style="font-size:21px">別發新股</div><div class="d up">股價便宜→增資稀釋成本高→改發債</div></div>
+  </div>
+  <p class="note">⚠️ 估值倍數為依公開資料之示意／約略值（非即時報價），上台時建議以彭博／路透即時數據為準。</p>
+</section>
+
+<!-- 9 TAKEAWAYS -->
+<section class="slide">
+  <div class="kicker">09 ・ 投資總結</div>
+  <h2>三個 Takeaway 與風險旗標</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>核心判斷</h3>
+      <ul class="bul">
+        <li><b>綜效已兌現，下一階段靠擴張</b>：FY23→24 利潤率躍升；FY25 進入舉債併購衝刺期</li>
+        <li><b>成長 vs 獲利品質的張力</b>：兩大金牛 EBITDA 萎縮，全靠策略事業撐成長</li>
+        <li><b>股東回報轉積極</b>：庫藏股＋股利 FY26E +50%，配息率仍僅 26%（保留再投資空間）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--red)">風險旗標</h3>
+      <ul class="bul r">
+        <li><b>策略事業依賴度過高</b>：一旦失速，併購槓桿即成風險</li>
+        <li><b>財務結構</b>：自有資本比率 26.8%＋FCF 轉負，須觀察利息與商譽減損</li>
+        <li><b>資安營運風險</b>：ASKUL 勒索軟體已實質衝擊損益</li>
+        <li><b>ROE 6.5% 仍低</b>：龐大資產的回報效率是長期課題</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 10 FINANCING WHY -->
+<section class="slide dark">
+  <div class="kicker" style="color:#7ee2a3">10 ・ 融資策略</div>
+  <h2>為什麼現在需要融資？</h2>
+  <p class="sub">財報已給出明確訊號：公司正處於「成長投資吃掉自由現金流」的階段</p>
+  <div class="grid g4" style="flex:0 0 auto">
+    <div class="card kpi"><div class="v" style="color:var(--red)">−NT$307億</div><div class="l" style="color:#9fb3c8">FY25 自由現金流（轉負）</div></div>
+    <div class="card kpi"><div class="v" style="color:#7ee2a3">NT$1,229億</div><div class="l" style="color:#9fb3c8">FY26E 目標 EBITDA (+17.8%)</div></div>
+    <div class="card kpi"><div class="v">26.8%</div><div class="l" style="color:#9fb3c8">自有資本比率（已偏低）</div></div>
+    <div class="card kpi"><div class="v" style="color:#7ee2a3">NT$1,392億</div><div class="l" style="color:#9fb3c8">營運現金流（償債能力強）</div></div>
+  </div>
+  <div class="card" style="margin-top:20px;flex:1">
+    <h3>融資需求的三大推力</h3>
+    <ul class="bul" style="margin-top:6px">
+      <li><b>海外金融科技擴張</b>：LINE Bank Taiwan 增資、LINE MAN 東南亞市場、PayPay 生態圈持續燒錢搶市佔</li>
+      <li><b>生成式 AI 與資料中心 Capex</b>：財報明指 AI 相關費用上升，已壓縮 Media EBITDA——這是必須投入的軍備競賽</li>
+      <li><b>策略性併購的彈藥</b>：FY25 一年併入 5 家，擴張節奏需要穩定的長期資金支撐，而非靠侵蝕現金部位</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 11 FINANCING HOW MUCH / WHAT -->
+<section class="slide dark">
+  <div class="kicker" style="color:#7ee2a3">11 ・ 融資金額與用途</div>
+  <h2>建議募資規模：NT$700 – 850 億</h2>
+  <p class="sub">約覆蓋 2 年的負自由現金流缺口 + 策略軍火庫，財務上可由 NT$1,392億 營運現金流輕鬆支撐利息</p>
+  <div class="bignum" style="margin:8px 0 20px">NT$735<small> 億（中位數方案 ≈ 日圓 3,500 億）</small></div>
+  <div class="src-use">
+    <div class="su-col">
+      <h4>資金來源 SOURCES</h4>
+      <div class="su-row"><span>普通公司債（5–10年）</span><span>NT$420億</span></div>
+      <div class="su-row"><span>混合式／次順位債（計入半數權益）</span><span>NT$210億</span></div>
+      <div class="su-row"><span>銀行聯貸循環額度（備用）</span><span>NT$105億</span></div>
+      <div class="su-row"><span>合計</span><span>NT$735億</span></div>
+    </div>
+    <div class="su-col">
+      <h4>資金用途 USES</h4>
+      <div class="su-row"><span>海外金融科技擴張（台/泰/星）</span><span>NT$252億</span></div>
+      <div class="su-row"><span>生成式 AI ＋ 資料中心 Capex</span><span>NT$210億</span></div>
+      <div class="su-row"><span>策略性併購軍火庫</span><span>NT$168億</span></div>
+      <div class="su-row"><span>既有債務再融資（拉長天期）</span><span>NT$105億</span></div>
+    </div>
+  </div>
+  <p class="note" style="color:#7d93a8">規模推估依據：FY25 FCF 缺口 −NT$307億 × 2 年 ≈ NT$614億，加上併購與 AI 軍備緩衝至約 NT$735億。</p>
+</section>
+
+<!-- 12 FINANCING HOW -->
+<section class="slide dark">
+  <div class="kicker" style="color:#7ee2a3">12 ・ 融資方式</div>
+  <h2>以「債」為主、避免股權稀釋</h2>
+  <p class="sub">公司正在買回庫藏股，此時增資發股自相矛盾；應善用日本低利率與投資級信評發債</p>
+  <div class="flowrow" style="flex:0 0 auto;margin-bottom:18px">
+    <div class="flowbox"><div class="n">首選</div><div class="t">普通公司債</div><div class="x">投資級信評＋日本低利環境，資金成本低；NT$1,392億 營運現金流償息無虞</div></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><div class="n">護盤</div><div class="t">混合式債券</div><div class="x">信評機構計入 50% 權益，避免自有資本比率再跌破門檻</div></div>
+    <div class="arrow">→</div>
+    <div class="flowbox"><div class="n">備援</div><div class="t">銀行聯貸額度</div><div class="x">併購機會出現時的即時彈藥，不動用則零成本</div></div>
+    <div class="arrow">✕</div>
+    <div class="flowbox" style="border-color:rgba(226,59,59,.5)"><div class="n" style="color:var(--red)">不建議</div><div class="t">現金增資</div><div class="x">與庫藏股政策矛盾、稀釋 EPS／ROE，市場觀感差</div></div>
+  </div>
+  <div class="card" style="flex:1">
+    <h3>決策邏輯（融資三問）</h3>
+    <ul class="bul">
+      <li><b>要不要融資？</b>要——FCF 轉負＋策略擴張＋AI 軍備，內部現金不足以同時支應</li>
+      <li><b>融多少？</b>約 NT$735 億——覆蓋 2 年缺口＋併購緩衝，且利息可由營運現金流安全覆蓋</li>
+      <li><b>怎麼融？</b>以債為主（普通債＋混合債），保留股權；用混合債護住自有資本比率，避免信評下調</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 13 CLOSING -->
+<section class="slide cover" style="background:linear-gradient(135deg,#0d1b2a,#05924a)">
+  <div class="kicker" style="color:#bff5d4">結語</div>
+  <h1 style="font-size:46px">穩健本業 × 槓桿擴張<br>用「以債為主」的融資<br>押注海外金融科技的未來</h1>
+  <p class="sub" style="color:#d8f5e3;font-size:18px;margin-top:24px">
+    LY 的核心金牛提供穩定現金流，但成長已押注策略事業；建議募資 NT$735 億、以債為主，<br>投入海外金融科技、AI 軍備與併購——在不稀釋股權下，為下一階段成長加滿油。
+  </p>
+  <div style="margin-top:34px;display:flex;gap:12px;flex-wrap:wrap">
+    <span class="pill" style="background:rgba(255,255,255,.12);color:#fff;border:none"><span class="dot" style="background:#7ee2a3"></span>資料來源：LY Corporation FY2024 / FY2025 決算短信（IFRS）｜匯率 1 JPY = 0.21 TWD</span>
+  </div>
+</section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+
+<div id="nav">
+  <div class="brand">LY <span>CORP</span> ｜ 財務分析簡報（台幣版）</div>
+  <div class="navbtns">
+    <button class="nbtn" id="prev">‹</button>
+    <span id="counter">1 / 14</span>
+    <button class="nbtn" id="next">›</button>
+  </div>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;const charts={};
+const dotsBox=document.getElementById('dots');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='pdot'+(i===0?' on':'');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+const dots=[...document.querySelectorAll('.pdot')];
+function go(i){
+  i=Math.max(0,Math.min(slides.length-1,i));
+  slides[cur].classList.remove('active');dots[cur].classList.remove('on');
+  cur=i;slides[cur].classList.add('active');dots[cur].classList.add('on');
+  document.getElementById('counter').textContent=(i+1)+' / '+slides.length;
+  initCharts(i);
+}
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1);
+});
+
+const GREEN='#06C755',INK='#0d1b2a',BLUE='#2d6cdf',RED='#e23b3b',AMBER='#f2a000',SLATE='#8a9aab';
+Chart.defaults.font.family='"PingFang TC","Noto Sans TC",sans-serif';
+Chart.defaults.font.size=13;Chart.defaults.color='#5a6b7b';
+const yr=['FY23','FY24','FY25'];
+
+function initCharts(idx){
+  const mk=(id,cfg)=>{if(charts[id]||!document.getElementById(id))return;charts[id]=new Chart(document.getElementById(id),cfg);};
+  if(idx===2)mk('c_income',{type:'bar',data:{labels:yr,datasets:[
+    {label:'營收(億NT$)',data:[3811,4027,4276],backgroundColor:GREEN,borderRadius:6,yAxisID:'y',order:2},
+    {label:'營業利益率(%)',data:[11.5,16.4,16.8],type:'line',borderColor:INK,backgroundColor:INK,borderWidth:3,tension:.3,yAxisID:'y1',order:1,pointRadius:5}
+  ]},options:{maintainAspectRatio:false,scales:{y:{position:'left',title:{display:true,text:'億新台幣'}},y1:{position:'right',min:0,max:25,grid:{drawOnChartArea:false},title:{display:true,text:'%'}}},plugins:{legend:{position:'bottom'}}}});
+  if(idx===3){mk('c_eps',{type:'bar',data:{labels:yr,datasets:[
+    {label:'基本EPS',data:[3.17,4.41,5.87],backgroundColor:GREEN,borderRadius:6},
+    {label:'調整後EPS',data:[4.69,5.23,6.03],backgroundColor:INK,borderRadius:6}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'新台幣/股'}}}}});
+   mk('c_roe',{type:'line',data:{labels:yr,datasets:[
+    {label:'ROE',data:[3.8,5.1,6.5],borderColor:GREEN,backgroundColor:'rgba(6,199,85,.12)',fill:true,tension:.3,borderWidth:3,pointRadius:6,pointBackgroundColor:GREEN}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:8,title:{display:true,text:'%'}}}}});}
+  if(idx===4)mk('c_bs',{type:'bar',data:{labels:yr,datasets:[
+    {label:'資產總額(億NT$)',data:[18992,19232,23531],backgroundColor:BLUE,borderRadius:6,yAxisID:'y',order:2},
+    {label:'自有資本比率(%)',data:[33.6,32.7,26.8],type:'line',borderColor:RED,backgroundColor:RED,borderWidth:3,tension:.3,yAxisID:'y1',order:1,pointRadius:5}
+  ]},options:{maintainAspectRatio:false,scales:{y:{title:{display:true,text:'億新台幣'}},y1:{position:'right',min:0,max:40,grid:{drawOnChartArea:false},title:{display:true,text:'%'}}},plugins:{legend:{position:'bottom'}}}});
+  if(idx===5)mk('c_cf',{type:'bar',data:{labels:yr,datasets:[
+    {label:'營運CF',data:[665,1091,1392],backgroundColor:GREEN,borderRadius:5},
+    {label:'投資CF',data:[-933,-1062,-1699],backgroundColor:RED,borderRadius:5},
+    {label:'融資CF',data:[-171,-875,322],backgroundColor:AMBER,borderRadius:5}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'億新台幣'}}}}});
+  if(idx===6){mk('c_segrev',{type:'bar',data:{labels:['Media','Commerce','Strategic'],datasets:[
+    {label:'FY24',data:[1537,1782,716],backgroundColor:SLATE,borderRadius:5},
+    {label:'FY25',data:[1544,1801,936],backgroundColor:GREEN,borderRadius:5}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'億新台幣'}}}}});
+   mk('c_segebitda',{type:'bar',data:{labels:['Media','Commerce','Strategic'],datasets:[
+    {label:'EBITDA YoY %',data:[-2.2,-12.8,85.0],backgroundColor:['#f2a000','#e23b3b','#06C755'],borderRadius:6}
+  ]},options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'% YoY'}}}}});}
+  if(idx===8)mk('c_val',{type:'bar',data:{labels:['LY Corp','Naver','Kakao','Tencent','Sea','Rakuten'],datasets:[
+    {label:'EV/EBITDA (倍)',data:[7.5,12,11,13,22,9],backgroundColor:['#06C755','#8a9aab','#8a9aab','#8a9aab','#8a9aab','#8a9aab'],borderRadius:6}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'倍'}}}}});
+}
+initCharts(0);
+</script>
+</body>
+</html>
